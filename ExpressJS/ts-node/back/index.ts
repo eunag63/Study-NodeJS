@@ -8,12 +8,19 @@ import * as passport from 'passport';
 import * as hpp from 'hpp';
 import * as helmet from 'helmet';
 
+import { sequelize } from './models';
 dotenv.config();
 const app = express();
 const prod = process.env.NODE_ENV === 'production';
 
 app.set('port', prod ? process.env.PORT : 3065);
-
+sequelize.sync({ force: false })
+    .then(() => {
+        console.log('데이터베이스 연결 성공');
+    })
+    .catch((error) => {
+        console.error(error);
+    });
 if(prod) {
     app.use(hpp());
     app.use(helmet());
