@@ -4,6 +4,7 @@ import { isLoggedIn, isNotLoggedIn } from './middleware';
 import User from '../models/user';
 import passport = require('passport');
 import Post from '../models/post';
+import { nextTick } from 'process';
 
 const router = express.Router();
 
@@ -129,9 +130,42 @@ router.get('/:id/followings', isLoggedIn, async(req, res, next) => {
         if (!user) return res.status(404).send('존재하지 않는 유저입니다.');
         const follower = await user.getFollowings({
             attributes: ['id', 'nickname'],
+            limit: parseInt(req.query.limit, 10),
+            offset: parseInt(req.query.offset, 10),
         })
+        return res.json(follower);
     } catch (error) {
         console.log(error);
         return next(error)
     }
+})
+
+router.delete('./:id/follow', isLoggedIn, async(req, res, next) => {
+    try {
+        const me = await User.findOne({
+            where: {id: req.user!.id },
+        });
+        await me!.removeFollower(parseInt(req.params.id, 10));
+        res.send(req.params.id);
+    } catch (error) {
+        console.log(error);
+        next(error)
+    }
+});
+
+router.post('/:id/follow', isLoggedIn, async(req, res, nest) => {
+    try {
+        const me = await User.findOne({
+            where: { id: req.user!.id },
+        });
+        await me!.addFollowing(parseInt(req.params.id, 10));
+        res.send(req.params.id);
+    } catch (error) {
+        console.error(error);
+        next(error);
+    }
+})
+
+router.get('/:id:posts', async(req, res, next) => {
+    
 })
