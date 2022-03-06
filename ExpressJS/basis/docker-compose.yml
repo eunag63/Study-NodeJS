@@ -1,0 +1,18 @@
+version: '3.0'
+services:
+  web:
+    build: .
+    ports:
+      - "5000:5000"
+    networks:
+      - compose-networks
+  
+  mongodb:
+    image: "mongo"
+    ports:
+      - "27017:21017"
+    networks:
+      - compose-networks
+  
+networks:
+  compose-networks:
