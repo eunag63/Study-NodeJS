@@ -17,6 +17,7 @@ const app = express();
 const router = express.Router();
 
 app.use(cookieParser());
+app.use('/api/subscribe', require('./routes/subscribe'));
 
 ///////////////////////////////
 ///////여기에 API 설계/////////
